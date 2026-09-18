@@ -1,50 +1,25 @@
-require("config.lazy")
-require("config.terminal")
-require("config.keybinds")
-require("ibl").setup()
+vim.g.mapleader = " "
+vim.g.maplocalleader = "\\"
 
+-- Disable built-in plugins replaced by external plugins.
 local disabled_plugins = {
-  "netrw",
-  "netrwPlugin",
-  "netrwSettings",
-  "netrwFileHandlers",
-  "gzip",
-  "zip",
-  "zipPlugin",
-  "tar",
-  "tarPlugin",
-  "getscript",
-  "getscriptPlugin",
-  "vimball",
-  "vimballPlugin",
-  "2html_plugin",
-  "logipat",
-  "rrhelper",
-  "spellfile_plugin",
-  "matchit",
+	"netrw",
+	"netrwPlugin",
+	"netrwSettings",
+	"netrwFileHandlers",
 }
 
 for _, plugin in ipairs(disabled_plugins) do
-  vim.g["loaded_" .. plugin] = 1
+	vim.g["loaded_" .. plugin] = 1
 end
 
-vim.opt.relativenumber = true
+-- Core configuration
+require("config.options")
+require("config.filetypes")
 
-vim.opt.tabstop = 2
-vim.opt.shiftwidth = 2
-vim.opt.softtabstop = 2
-vim.opt.expandtab = true
+-- Plugin manager
+require("config.lazy")
 
-vim.opt.signcolumn = "yes:1"
-
-vim.cmd("filetype plugin indent on")
-
-vim.filetype.add({
-  extension = {
-    doxygen = "c",
-  },
-  pattern = {
-    [".*%.c%.doxygen"] = "c",
-    [".*%.cpp%.doxygen"] = "cpp",
-  },
-})
+-- User configuration
+require("config.keybinds")
+require("config.terminal")

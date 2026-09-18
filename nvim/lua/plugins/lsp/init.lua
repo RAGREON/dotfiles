@@ -1,63 +1,62 @@
 return {
-	"neovim/nvim-lspconfig",
-  event = { "BufReadPre", "BufNewFile" },
-	dependencies = {
-		"williamboman/mason.nvim",
-		"williamboman/mason-lspconfig.nvim",
-		"saghen/blink.cmp",
-		"saghen/blink.lib",
+	"mason-org/mason-lspconfig.nvim",
+
+	event = { "BufReadPre", "BufNewFile" },
+
+	opts = {
+		ensure_installed = {
+			"lua_ls",
+			"clangd",
+			"roslyn_ls",
+			"neocmake",
+		},
+
+		automatic_enable = true,
 	},
-	config = function()
-		local lspconfig = require("lspconfig")
-		local mason = require("mason")
-		local mason_lspconfig = require("mason-lspconfig")
 
-		-- Fix: Typo corrected (capabilities)
-		local lsp_capabilities = require("blink.cmp").get_lsp_capabilities()
+	dependencies = {
+		{
+			"mason-org/mason.nvim",
+			opts = {},
+		},
 
-		-- Fix: Initialize mason core first
-		mason.setup()
+		"neovim/nvim-lspconfig",
+		"saghen/blink.cmp",
+	},
 
-		mason_lspconfig.setup({
-			ensure_installed = { "lua_ls", "clangd" },
+	config = function(_, opts)
+		vim.lsp.config("*", {
+			capabilities = require("blink.cmp").get_lsp_capabilities(),
+		})
 
-			handlers = {
-				function(server_name)
-					lspconfig[server_name].setup({
-						capabilities = lsp_capabilities,
-					})
-				end,
-			},
+		require("mason-lspconfig").setup(opts)
+
+		local group = vim.api.nvim_create_augroup("user-lsp-attach", {
+			clear = true,
 		})
 
 		vim.api.nvim_create_autocmd("LspAttach", {
-			desc = "LSP actions",
+			group = group,
+
 			callback = function(event)
-				local bufmap = function(mode, lhs, rhs)
-					local opts = { buffer = event.buf }
-					vim.keymap.set(mode, lhs, rhs, opts)
+				local map = function(mode, lhs, rhs, desc)
+					vim.keymap.set(mode, lhs, rhs, {
+						buffer = event.buf,
+						desc = desc,
+					})
 				end
 
-				bufmap("n", "K", function()
-					vim.lsp.buf.hover({ border = "rounded" })
-				end)
-				bufmap("n", "gd", function()
-					vim.lsp.buf.signature_help({ border = "rounded" })
-				end)
-
-				bufmap("n", "gD", "<cmd>lua vim.lsp.buf.declaration()<cr>")
-				bufmap("n", "<leader>ca", "<cmd>lua vim.lsp.buf.code_action()<cr>")
-				bufmap("n", "gl", "<cmd>lua vim.diagnostic.open_float()<cr>")
-				bufmap("n", "gr", vim.lsp.buf.references)
-				bufmap("n", "<leader>pd", "<cmd>lua vim.diagnostic.goto_prev()<cr>")
-				bufmap("n", "<leader>nd", "<cmd>lua vim.diagnostic.goto_next()<cr>")
+				map("n", "K", vim.lsp.buf.hover, "Hover")
+				map("n", "gd", vim.lsp.buf.definition, "Definition")
+				map("n", "gD", vim.lsp.buf.declaration, "Declaration")
+				map("n", "gr", vim.lsp.buf.references, "References")
+				map("n", "gI", vim.lsp.buf.implementation, "Implementation")
+				map("n", "gK", vim.lsp.buf.signature_help, "Signature help")
+				map("n", "<leader>ca", vim.lsp.buf.code_action, "Code action")
+				map("n", "gl", vim.diagnostic.open_float, "Line diagnostics")
+				map("n", "[d", vim.diagnostic.goto_prev, "Previous diagnostic")
+				map("n", "]d", vim.diagnostic.goto_next, "Next diagnostic")
 			end,
-		})
-
-		vim.diagnostic.config({
-			virtual_text = false,
-			severity_sort = true,
-			float = { border = "rounded", source = "always" },
 		})
 	end,
 }
