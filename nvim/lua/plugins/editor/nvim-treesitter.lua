@@ -1,52 +1,35 @@
 return {
 	"nvim-treesitter/nvim-treesitter",
+
 	lazy = false,
 	build = ":TSUpdate",
-	dependencies = {
-		"windwp/nvim-ts-autotag",
-	},
 
 	config = function()
-		local install = require("nvim-treesitter.install")
+		require("nvim-treesitter").setup()
 
-		install.compilers = { "cl" }
-		install.prefer_git = false
-
-		vim.api.nvim_create_autocmd("Filetype", {
-			callback = function(ev)
-				pcall(vim.treesitter.start, ev.buf)
-			end,
+		require("nvim-treesitter").install({
+			"c_sharp",
+			"c",
+			"cpp",
+			"lua",
+			"vim",
+			"vimdoc",
+			"query",
+			"javascript",
+			"typescript",
+			"python",
+			"html",
+			"css",
+			"json",
+			"bash",
 		})
 
-		require("nvim-treesitter").setup({
-			ensure_installed = {
-				"c_sharp",
-				"c",
-				"cpp",
-				"lua",
-				"vim",
-				"vimdoc",
-				"query",
-				"javascript",
-				"typescript",
-				"python",
-				"html",
-				"css",
-				"json",
-				"bash",
-			},
+		vim.api.nvim_create_autocmd("FileType", {
+			callback = function(ev)
+				pcall(vim.treesitter.start, ev.buf)
 
-			sync_install = false,
-
-			highlight = {
-				enable = true,
-			},
-
-			indent = {
-				enabled = true,
-			},
-
-			require("nvim-ts-autotag").setup(),
+				vim.bo[ev.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+			end,
 		})
 	end,
 }

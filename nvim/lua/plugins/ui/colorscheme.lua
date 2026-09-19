@@ -10,7 +10,7 @@ return {
 		priority = 1000,
 		config = function()
 			-- Set active scheme here
-			vim.cmd.colorscheme("tokyonight")
+			vim.cmd.colorscheme("tokyonight-night")
 		end,
 	},
 }

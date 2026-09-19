@@ -21,12 +21,11 @@ return {
 		},
 
 		"neovim/nvim-lspconfig",
-		"saghen/blink.cmp",
 	},
 
 	config = function(_, opts)
 		vim.lsp.config("*", {
-			capabilities = require("blink.cmp").get_lsp_capabilities(),
+			capabilities = vim.lsp.protocol.make_client_capabilities(),
 		})
 
 		require("mason-lspconfig").setup(opts)
@@ -39,23 +38,119 @@ return {
 			group = group,
 
 			callback = function(event)
-				local map = function(mode, lhs, rhs, desc)
-					vim.keymap.set(mode, lhs, rhs, {
-						buffer = event.buf,
-						desc = desc,
-					})
-				end
+				local opts = {
+					buffer = event.buf,
+				}
 
-				map("n", "K", vim.lsp.buf.hover, "Hover")
-				map("n", "gd", vim.lsp.buf.definition, "Definition")
-				map("n", "gD", vim.lsp.buf.declaration, "Declaration")
-				map("n", "gr", vim.lsp.buf.references, "References")
-				map("n", "gI", vim.lsp.buf.implementation, "Implementation")
-				map("n", "gK", vim.lsp.buf.signature_help, "Signature help")
-				map("n", "<leader>ca", vim.lsp.buf.code_action, "Code action")
-				map("n", "gl", vim.diagnostic.open_float, "Line diagnostics")
-				map("n", "[d", vim.diagnostic.goto_prev, "Previous diagnostic")
-				map("n", "]d", vim.diagnostic.goto_next, "Next diagnostic")
+				vim.keymap.set(
+					"n",
+					"K",
+					function()
+						vim.lsp.buf.hover()
+					end,
+					vim.tbl_extend("force", opts, {
+						desc = "Hover",
+					})
+				)
+
+				vim.keymap.set(
+					"n",
+					"gd",
+					function()
+						vim.lsp.buf.definition()
+					end,
+					vim.tbl_extend("force", opts, {
+						desc = "Definition",
+					})
+				)
+
+				vim.keymap.set(
+					"n",
+					"gD",
+					function()
+						vim.lsp.buf.declaration()
+					end,
+					vim.tbl_extend("force", opts, {
+						desc = "Declaration",
+					})
+				)
+
+				vim.keymap.set(
+					"n",
+					"gr",
+					function()
+						vim.lsp.buf.references()
+					end,
+					vim.tbl_extend("force", opts, {
+						desc = "References",
+					})
+				)
+
+				vim.keymap.set(
+					"n",
+					"gI",
+					function()
+						vim.lsp.buf.implementation()
+					end,
+					vim.tbl_extend("force", opts, {
+						desc = "Implementation",
+					})
+				)
+
+				vim.keymap.set(
+					"n",
+					"gK",
+					function()
+						vim.lsp.buf.signature_help()
+					end,
+					vim.tbl_extend("force", opts, {
+						desc = "Signature help",
+					})
+				)
+
+				vim.keymap.set(
+					"n",
+					"<leader>ca",
+					function()
+						vim.lsp.buf.code_action()
+					end,
+					vim.tbl_extend("force", opts, {
+						desc = "Code action",
+					})
+				)
+
+				vim.keymap.set(
+					"n",
+					"gl",
+					function()
+						vim.diagnostic.open_float()
+					end,
+					vim.tbl_extend("force", opts, {
+						desc = "Line diagnostics",
+					})
+				)
+
+				vim.keymap.set(
+					"n",
+					"[d",
+					function()
+						vim.diagnostic.goto_prev()
+					end,
+					vim.tbl_extend("force", opts, {
+						desc = "Previous diagnostic",
+					})
+				)
+
+				vim.keymap.set(
+					"n",
+					"]d",
+					function()
+						vim.diagnostic.goto_next()
+					end,
+					vim.tbl_extend("force", opts, {
+						desc = "Next diagnostic",
+					})
+				)
 			end,
 		})
 	end,
