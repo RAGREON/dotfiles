@@ -1,0 +1,64 @@
+{
+  "$schema": "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json",
+  "version": 2,
+  "final_space": true,
+  "upgrade": {
+    "notice": true,
+    "interval": "168h",
+    "auto": false,
+    "source": "cdn"
+  },
+  "blocks": [
+    {
+      "type": "prompt",
+      "alignment": "left",
+      "segments": [
+        {
+          "type": "time",
+          "style": "diamond",
+          "leading_diamond": "",
+          "trailing_diamond": "",
+          "foreground": "#1E1E2E",
+          "background": "#89B4FA",
+          "template": " {{ .CurrentDate | date \"01-02 15:04:05\" }} "
+        },
+        {
+          "type": "path",
+          "style": "powerline",
+          "powerline_symbol": "",
+          "foreground": "#CDD6F4",
+          "background": "#45475A",
+          "template": "  {{ .Path }} ",
+          "properties": {
+            "style": "full"
+          }
+        },
+        {
+          "type": "git",
+          "style": "powerline",
+          "powerline_symbol": "",
+          "foreground": "#1E1E2E",
+          "background": "#A6E3A1",
+          "background_templates": [
+            "{{ if or (.Working.Changed) (.Staging.Changed) }}#F9E2AF{{ end }}",
+            "{{ if and (gt .Ahead 0) (gt .Behind 0) }}#F38BA8{{ end }}"
+          ],
+          "template": "  {{ .HEAD }}{{ if .BranchStatus }} {{ .BranchStatus }}{{ end }}{{ if .Working.Changed }}  {{ .Working.String }}{{ end }} "
+        }
+      ]
+    },
+    {
+      "type": "prompt",
+      "alignment": "left",
+      "newline": true,
+      "segments": [
+        {
+          "type": "text",
+          "style": "plain",
+          "foreground": "#89B4FA",
+          "template": "❯"
+        }
+      ]
+    }
+  ]
+}
